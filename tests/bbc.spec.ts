@@ -43,13 +43,15 @@ test.describe('Open BBC frontpages', () => {
     await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
 
     // Search for and find Heathrow
-    await page.getByPlaceholder('Enter a town, city or UK').click();
-    await page.getByPlaceholder('Enter a town, city or UK').fill('Heathrow');
-    // await page.getByPlaceholder('Enter a town, city or UK').press('Enter');
-    await page.getByRole('button', { name: 'Search', exact: true }).click();
-    await expect(page.locator('#location-list')).toContainText('London Heathrow Airport, Greater London');
-    await expect(page.getByRole('link', { name: 'London Heathrow Airport,' })).toBeVisible();
-    await page.getByRole('link', { name: 'London Heathrow Airport,' }).click();
+    const w_search_header = page.getByTestId('weather-masthead');
+    const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
+    await w_search_textbox.click();
+    await w_search_textbox.fill('Heathrow');
+    // await w_search_textbox.press('Enter');
+    await w_search_header.getByRole('button', { name: 'Search', exact: true }).click();
+    await expect(w_search_header.locator('#location-list')).toContainText('London Heathrow Airport, Greater London');
+    await expect(w_search_header.getByRole('link', { name: 'London Heathrow Airport,' })).toBeVisible();
+    await w_search_header.getByRole('link', { name: 'London Heathrow Airport,' }).click();
     
     // Validate weather page for Heathrow
     await expect(page.getByTestId('location').getByRole('heading', { name: 'London Heathrow Airport' })).toBeVisible();
