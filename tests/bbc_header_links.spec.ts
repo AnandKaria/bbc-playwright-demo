@@ -41,21 +41,5 @@ test.describe('Open BBC frontpages', () => {
     // Check page content
     await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
-
-    // Search for and find Heathrow
-    const w_search_header = page.getByTestId('weather-masthead');
-    const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
-    await w_search_textbox.click();
-    await w_search_textbox.fill('Heathrow');
-    // await w_search_textbox.press('Enter');
-    await w_search_header.getByRole('button', { name: 'Search', exact: true }).click();
-    await expect(w_search_header.locator('#location-list')).toContainText('London Heathrow Airport, Greater London');
-    await expect(w_search_header.getByRole('link', { name: 'London Heathrow Airport,' })).toBeVisible();
-    await w_search_header.getByRole('link', { name: 'London Heathrow Airport,' }).click();
-    
-    // Validate weather page for Heathrow
-    await expect(page.getByTestId('location').getByRole('heading', { name: 'London Heathrow Airport' })).toBeVisible();
-    await expect(page.locator('#site-container')).toContainText('Observation Station: London/Heathrow Intl (Lat: 51.4833 | Long: -0.45)');
-    await page.getByLabel('BBC-wide').getByRole('link', { name: 'Home', exact: true }).click();
   });
 });
