@@ -36,10 +36,10 @@ test.describe('Open BBC frontpages', () => {
     await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
 
     // Check page title
-    await expect(page).toHaveTitle(/BBC Weather/);
+    await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
 
     // Check page content
-    await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
     await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
   });
 });

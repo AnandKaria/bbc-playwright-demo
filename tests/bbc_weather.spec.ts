@@ -34,13 +34,6 @@ test.describe('Search for weather forecasts - exact match', () => {
       // Navigate to weather link
       await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
   
-      // Check page title
-      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
-  
-      // Check page content
-      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
-      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
-  
       // Search for term and navigate into link
       const w_search_header = page.getByTestId('weather-masthead');
       const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
@@ -82,13 +75,6 @@ test.describe('Search for weather forecasts - partial match', () => {
       // Navigate to weather link
       await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
   
-      // Check page title
-      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
-  
-      // Check page content
-      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
-      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
-  
       // Search for term, get autocompleted result and navigate into link
       const w_search_header = page.getByTestId('weather-masthead');
       const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
@@ -108,9 +94,6 @@ test.describe('Search for weather forecasts - partial match', () => {
 test.describe('Search for weather forecasts - no match', () => {
   // Set test data
   // - term: term to be searched in masthead search bar
-  // - list_entry: an expected entry in the search results
-  // - heading: the page heading on loading that result
-  // - obs_station: the observation station data for that location in the details section
   [
     { term: 'qzqzqz', },
     { term: '1234567',},
@@ -118,13 +101,6 @@ test.describe('Search for weather forecasts - no match', () => {
     test('Weather page search doesn\'t return results for ' + term, async ({ page }) => {
       // Navigate to weather link
       await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
-  
-      // Check page title
-      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
-  
-      // Check page content
-      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
-      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
   
       // Search for term and get no autocompleted results
       const w_search_header = page.getByTestId('weather-masthead');
