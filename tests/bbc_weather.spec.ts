@@ -10,40 +10,137 @@ test.beforeEach('Load home page, set cookie status', async ({ page }) => {
   await expect(page.getByLabel('Cookies on the BBC website')).not.toBeVisible();
 });
 
-const w_search_data = {
-  term: 'Heathrow',
-  list_entry: 'London Heathrow Airport, Greater London',
-  link: 'London Heathrow Airport,',
-  heading: 'London Heathrow Airport',
-  obs_station: 'Observation Station: London/Heathrow Intl (Lat: 51.4833 | Long: -0.45)',
-};
+test.describe('Search for weather forecasts - exact match', () => {
+  // Set test data
+  // - term: term to be searched in masthead search bar
+  // - list_entry: an expected entry in the search results
+  // - heading: the page heading on loading that result
+  // - obs_station: the observation station data for that location in the details section
+  [
+    {
+      term: 'Heathrow',
+      list_entry: 'London Heathrow Airport, Greater London',
+      heading: 'London Heathrow Airport',
+      obs_station: 'Observation Station: London/Heathrow Intl (Lat: 51.4833 | Long: -0.45)',
+    },
+    {
+      term: 'Edinburgh',
+      list_entry: 'Edinburgh, Edinburgh',
+      heading: 'Edinburgh',
+      obs_station: 'Observation Station: Edinburgh/Royal Botanic Garden (Lat: 55.9667 | Long: -3.2167)',
+    },
+  ].forEach(({term, list_entry, heading, obs_station}) => {
+    test('Weather page search returns results for ' + term, async ({ page }) => {
+      // Navigate to weather link
+      await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
+  
+      // Check page title
+      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
+  
+      // Check page content
+      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
+      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
+  
+      // Search for term and navigate into link
+      const w_search_header = page.getByTestId('weather-masthead');
+      const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
+      await w_search_textbox.click();
+      await w_search_textbox.pressSequentially(term, { delay: 50 });
+      // await w_search_textbox.press('Enter');
+      await w_search_header.getByRole('button', { name: 'Search', exact: true }).click();
+      await expect(w_search_header.locator('#location-list').getByRole('link', { name: list_entry })).toBeVisible();
+      await w_search_header.getByRole('link', { name: list_entry }).click();
+      
+      // Validate weather page for Heathrow
+      await expect(page.getByTestId('location').getByRole('heading', { name: heading })).toBeVisible();
+      await expect(page.locator('.wr-c-observations__details')).toContainText(obs_station);
+    });
+  })
+});
 
-test.describe('Search for weather forecasts', () => {
-  test('Weather page search returns results for ' + w_search_data.term, async ({ page }) => {
-    // Navigate to weather link
-    await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
+test.describe('Search for weather forecasts - partial match', () => {
+  // Set test data
+  // - term: term to be searched in masthead search bar
+  // - list_entry: an expected entry in the search results
+  // - heading: the page heading on loading that result
+  // - obs_station: the observation station data for that location in the details section
+  [
+    {
+      term: 'Hilling',
+      list_entry: 'Hillington, Norfolk',
+      heading: 'Hillington',
+      obs_station: 'Observation Station: Houghton Hall (Lat: 52.8167 | Long: 0.65)',
+    },
+    {
+      term: 'Edin',
+      list_entry: 'Edinburgh, Edinburgh',
+      heading: 'Edinburgh',
+      obs_station: 'Observation Station: Edinburgh/Royal Botanic Garden (Lat: 55.9667 | Long: -3.2167)',
+    },
+  ].forEach(({term, list_entry, heading, obs_station}) => {
+    test('Weather page search returns results for ' + term, async ({ page }) => {
+      // Navigate to weather link
+      await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
+  
+      // Check page title
+      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
+  
+      // Check page content
+      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
+      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
+  
+      // Search for term, get autocompleted result and navigate into link
+      const w_search_header = page.getByTestId('weather-masthead');
+      const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
+      await w_search_textbox.click();
+      await w_search_textbox.pressSequentially(term, { delay: 50 });
+      await expect(w_search_header.locator('#location-list').getByRole('link', { name: list_entry })).toBeVisible();
+      await w_search_header.getByRole('link', { name: list_entry }).click();
+      
+      // Validate weather page for Heathrow
+      await expect(page.getByTestId('location').getByRole('heading', { name: heading })).toBeVisible();
+      await expect(page.locator('.wr-c-observations__details')).toContainText(obs_station);
+    });
+  })
+});
 
-    // Check page title
-    // await expect(page).toHaveTitle(/BBC Weather/);
 
-    // Check page content
-    await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
+test.describe('Search for weather forecasts - no match', () => {
+  // Set test data
+  // - term: term to be searched in masthead search bar
+  // - list_entry: an expected entry in the search results
+  // - heading: the page heading on loading that result
+  // - obs_station: the observation station data for that location in the details section
+  [
+    { term: 'qzqzqz', },
+    { term: '1234567',},
+  ].forEach(({term}) => {
+    test('Weather page search doesn\'t return results for ' + term, async ({ page }) => {
+      // Navigate to weather link
+      await page.getByTestId('header-content').getByRole('link', { name: 'Weather' }).click();
+  
+      // Check page title
+      // await expect(page).toHaveTitle(/BBC Weather/, { timeout: 10000 }); // timeout adjusted for slow app
+  
+      // Check page content
+      await expect(page.getByRole('link', { name: 'BBC Weather' })).toBeVisible({ timeout: 10000 }); // timeout adjusted for slow app
+      await expect(page.getByRole('heading', { name: 'UK Summary' })).toBeVisible();
+  
+      // Search for term and get no autocompleted results
+      const w_search_header = page.getByTestId('weather-masthead');
+      const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
+      await w_search_textbox.click();
+      await w_search_textbox.pressSequentially(term, { delay: 50 });
+      await expect(w_search_header.locator('#location-list')).not.toBeVisible();
 
-    // Search for and find Heathrow
-    const w_search_header = page.getByTestId('weather-masthead');
-    const w_search_textbox = w_search_header.getByPlaceholder('Enter a town, city or UK');
-    await w_search_textbox.click();
-    await w_search_textbox.fill(w_search_data.term);
-    // await w_search_textbox.press('Enter');
-    await w_search_header.getByRole('button', { name: 'Search', exact: true }).click();
-    await expect(w_search_header.locator('#location-list')).toContainText(w_search_data.list_entry);
-    await expect(w_search_header.getByRole('link', { name: w_search_data.link })).toBeVisible();
-    await w_search_header.getByRole('link', { name: w_search_data.link }).click();
-    
-    // Validate weather page for Heathrow
-    await expect(page.getByTestId('location').getByRole('heading', { name: w_search_data.heading })).toBeVisible();
-    //FIXME: Needs more accurate locator
-    await expect(page.locator('#site-container')).toContainText(w_search_data.obs_station);
-  });
+      // Click search and check "no results" message
+      await w_search_header.getByRole('button', { name: 'Search', exact: true }).click();
+      const w_search_nfmsg = w_search_header.locator('.ls-c-message__content').first();
+      await w_search_nfmsg.waitFor({ timeout: 2000 });
+      await expect(w_search_nfmsg).toContainText('We couldn\'t find any results for "' + term + '"', { timeout: 5000 });
+
+      // Close search box
+      await page.getByRole('button', { name: 'Close location search' }).click();
+    });
+  })
 });
