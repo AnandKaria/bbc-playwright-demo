@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.beforeEach('Load home page, reject cookies, click Weather link', async ({ page }) => {
   // Navigate to main page
@@ -101,8 +101,8 @@ test.describe('Search for weather forecasts - no match', () => {
       // Click search and check "no results" message
       await masthead.getByRole('button', { name: 'Search', exact: true }).click();
       const w_search_nfmsg = masthead.locator('.ls-c-message__content').first();
-      await w_search_nfmsg.waitFor({ timeout: 2000 });
-      await expect(w_search_nfmsg).toContainText('We couldn\'t find any results for "' + term + '"', { timeout: 5000 });
+      await w_search_nfmsg.waitFor({ timeout: 2000 }); // locator may need time to appear
+      await expect(w_search_nfmsg).toContainText('We couldn\'t find any results for "' + term + '"');
 
       // Close search box
       await page.getByRole('button', { name: 'Close location search' }).click();
@@ -110,7 +110,7 @@ test.describe('Search for weather forecasts - no match', () => {
   })
 });
 
-async function input_search_term(page, term) {
+async function input_search_term(page: Page, term: string) {
   const masthead = page.getByTestId('weather-masthead');
   const textbox = page.getByTestId('weather-masthead').getByPlaceholder('Enter a town, city or UK');
   await textbox.click();
