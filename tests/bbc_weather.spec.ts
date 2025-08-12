@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
 import { test, expect, type Page } from '@playwright/test';
+import { loadCSVSync } from '../utils/data_utils/test_data_load';
 import partSearchData from '../data/weather_partial_search.json';
 
 test.beforeEach('Load home page, reject cookies, click Weather link', async ({ page }) => {
@@ -26,10 +27,7 @@ test.describe('Search for weather forecasts - exact match (CSV data)', () => {
     // - heading: the page heading on loading that result
     // - obs_station: the observation station data for that location in the details section
 
-  const test_dataset = parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'weather_full_search.csv')), {
-    columns: true,
-    skip_empty_lines: true
-  });
+  const test_dataset = loadCSVSync('../data/weather_full_search.csv');
 
   for (const record of test_dataset) {
     test('Weather page search returns results for ' + record.term, async ({ page }) => {
@@ -58,6 +56,9 @@ test.describe('Search for weather forecasts - partial match (JSON data)', () => 
     // - obs_station: the observation station data for that location in the details section
   partSearchData.forEach(({term, list_entry, heading, obs_station}) => {
     test('Weather page search returns results for ' + term, async ({ page }) => {
+      // Strike off tests of Hillington
+      test.fixme(list_entry === 'Hillington, Norfolk', 'Obs station data to be updated');
+
       // Search for term and get locators
       const masthead = await input_search_term(page, term);
 
