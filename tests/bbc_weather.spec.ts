@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
 import { test, expect, type Page } from '@playwright/test';
+import partSearchData from '../data/weather_partial_search.json';
 
 test.beforeEach('Load home page, reject cookies, click Weather link', async ({ page }) => {
   // Navigate to main page
@@ -17,7 +18,7 @@ test.beforeEach('Load home page, reject cookies, click Weather link', async ({ p
 });
 
 
-test.describe('Search for weather forecasts - exact match', () => {
+test.describe('Search for weather forecasts - exact match (CSV data)', () => {
   // Test data reference
     // Data imported from ./datasets/weather_full_search.csv
     // - term: term to be searched in masthead search bar
@@ -25,7 +26,7 @@ test.describe('Search for weather forecasts - exact match', () => {
     // - heading: the page heading on loading that result
     // - obs_station: the observation station data for that location in the details section
 
-  const test_dataset = parse(fs.readFileSync(path.join(__dirname, 'datasets', 'weather_full_search.csv')), {
+  const test_dataset = parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'weather_full_search.csv')), {
     columns: true,
     skip_empty_lines: true
   });
@@ -48,26 +49,14 @@ test.describe('Search for weather forecasts - exact match', () => {
 
 });
 
-test.describe('Search for weather forecasts - partial match', () => {
-  // Set test data
-  // - term: term to be searched in masthead search bar
-  // - list_entry: an expected entry in the search results
-  // - heading: the page heading on loading that result
-  // - obs_station: the observation station data for that location in the details section
-  [
-    {
-      term: 'Hilling',
-      list_entry: 'Hillington, Norfolk',
-      heading: 'Hillington',
-      obs_station: 'Observation Station: Houghton Hall (Lat: 52.8167 | Long: 0.65)',
-    },
-    {
-      term: 'Edin',
-      list_entry: 'Edinburgh, Edinburgh',
-      heading: 'Edinburgh',
-      obs_station: 'Observation Station: Edinburgh/Royal Botanic Garden (Lat: 55.9667 | Long: -3.2167)',
-    },
-  ].forEach(({term, list_entry, heading, obs_station}) => {
+test.describe('Search for weather forecasts - partial match (JSON data)', () => {
+  // Test data reference
+    // Data imported from ./datasets/weather_partial_search.json
+    // - term: term to be searched in masthead search bar
+    // - list_entry: an expected entry in the search results
+    // - heading: the page heading on loading that result
+    // - obs_station: the observation station data for that location in the details section
+  partSearchData.forEach(({term, list_entry, heading, obs_station}) => {
     test('Weather page search returns results for ' + term, async ({ page }) => {
       // Search for term and get locators
       const masthead = await input_search_term(page, term);
@@ -83,7 +72,7 @@ test.describe('Search for weather forecasts - partial match', () => {
   })
 });
 
-test.describe('Search for weather forecasts - no match', () => {
+test.describe('Search for weather forecasts - no match (inline data)', () => {
   // Set test data
   // - term: term to be searched in masthead search bar
   [
