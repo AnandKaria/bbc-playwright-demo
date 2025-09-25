@@ -16,7 +16,7 @@ test.describe('Open BBC frontpages', () => {
     await page.getByTestId('header-content').getByRole('link', { name: 'Home', exact: true }).click();
   });
 
-  test('News page accessible and has key content', async ({ page }) => {
+  test('News page accessible and has key content', async ({ page, browserName }) => {
     // Navigate to news
     await page.getByTestId('header-content').getByRole('link', { name: 'News', exact: true }).click();
 
@@ -29,6 +29,9 @@ test.describe('Open BBC frontpages', () => {
 
     // Validate Most Read section
     await expect(page.getByRole('heading', { name: 'Most read' })).toBeVisible();
+
+    // Capture screenshot
+    await page.screenshot({ path: `test-results-media/news-${browserName}.png` });
   });
 
   test('Weather page accessible and has key content', async ({ page }) => {
