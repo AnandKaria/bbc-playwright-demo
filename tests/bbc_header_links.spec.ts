@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach('Load home page, set cookie status', async ({ page }) => {
   // Navigate to main page
-  await page.goto('https://www.bbc.co.uk/');
+  await page.goto('/');
 
   // Check cookie banner exists, reject non-essential, check banner dismissed
   await expect(page.getByLabel('Cookies on the BBC website')).toBeVisible();

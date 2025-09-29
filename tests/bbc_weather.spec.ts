@@ -7,7 +7,7 @@ import partSearchData from '../data/weather_partial_search.json';
 
 test.beforeEach('Load home page, reject cookies, click Weather link', async ({ page }) => {
   // Navigate to main page
-  await page.goto('https://www.bbc.co.uk/');
+  await page.goto('/');
 
   // Check cookie banner exists, reject non-essential, check banner dismissed
   await expect(page.getByLabel('Cookies on the BBC website')).toBeVisible();
