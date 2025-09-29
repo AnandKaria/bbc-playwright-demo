@@ -12,10 +12,12 @@ Anand's repository for developing demonstration Playwright tests against the BBC
  - Modifying test state for execution (fixme flagging)
  - Handling real-time text search results via pressSequentially
  - Taking screenshots
+ - Fix flaky test of lat long for Hilling
 
 ## To do
  - Geolocation tests
  - Video recording
+ - Mobile device test
 
 ## In backlog
 

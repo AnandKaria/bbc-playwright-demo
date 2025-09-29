@@ -54,7 +54,7 @@ test.describe('Search for weather forecasts - partial match (JSON data)', () => 
   partSearchData.forEach(({term, list_entry, heading, obs_station}) => {
     test('Weather page search returns results for ' + term, async ({ page }) => {
       // Strike off tests of Hillington
-      test.fixme(list_entry === 'Hillington, Norfolk', 'Obs station data to be updated');
+      // test.fixme(list_entry === 'Hillington, Norfolk', 'Obs station data to be updated');
 
       // Search for term and get locators
       const masthead = await input_search_term(page, term);
