@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-import { parse } from 'csv-parse/sync';
 import { test, expect, type Page } from '@playwright/test';
 import { loadCSVSync } from '../utils/data_utils/test_data_load';
 import partSearchData from '../data/weather_partial_search.json';
